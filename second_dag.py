@@ -7,7 +7,6 @@ import psycopg2 as db
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator, BranchPythonOperator
-from airflow.operators.email_operator import EmailOperator
 
 dict_month = {'Januari':1,
               'Februari':2,
@@ -59,6 +58,23 @@ def get_result(ti):
     else:
         return 'new_data'
 
+def to_postgres(ti):
+    conn_string="dbname='postgres' host='localhost' user='postgres' password='postgres'"
+    conn=db.connect(conn_string)
+    cur=conn.cursor()
+
+    datetime = ti.xcom_pull(task_ids='scraping', key='time')
+    magnitude = ti.xcom_pull(task_ids='scraping', key='magnitudo')
+    depth = ti.xcom_pull(task_ids='scraping', key='kedalaman')
+    coordinate = ti.xcom_pull(task_ids='scraping', key='koordinat')
+    location = ti.xcom_pull(task_ids='scraping', key='lokasi')
+
+    data_for_db=(datetime, magnitude, depth, coordinate, location)
+
+    query = "INSERT INTO indonesian_earthquakes (datetime, magnitude, depth_km, coordinate_idn, location_idn) values(%s,%s,%s,%s,%s)"
+    cur.execute(query,data_for_db)
+    conn.commit() 
+
 
 default_args = {
     'owner': 'Fadlil',
@@ -68,7 +84,7 @@ default_args = {
 }
 
 
-with DAG('ScrapingDAG',
+with DAG('ScrapingAutomationDAG',
          default_args=default_args,
          schedule_interval=timedelta(minutes=5),      # '0 * * * *',
          ) as dag:
@@ -88,12 +104,9 @@ with DAG('ScrapingDAG',
     bash3 = BashOperator(task_id='old_data',
                                bash_command='echo "there is old data"')
     
-    send_email_to = EmailOperator(
-                                task_id='send_email_to_perkapgelex18',
-                                to='perkapgelex18@gmail.com',
-                                subject='New Earthquake in Indonesia',
-                                html_content='Attached is the latest sales JSON file as requested.')
+    insert_to_postgres = PythonOperator(task_id='insert_to_postgres',
+                                 python_callable=to_postgres)
 
 print_starting >> scraping_bmkg >> get_result_bmkg
-get_result_bmkg >> bash2 >> send_email_to
+get_result_bmkg >> bash2 >> insert_to_postgres
 get_result_bmkg >> bash3

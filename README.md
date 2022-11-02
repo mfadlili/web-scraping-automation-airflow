@@ -12,15 +12,29 @@ After installing all the programs above, you need to install Apache Airflow on y
 You can follow this tutorial to install and setting up the Airflow : https://www.youtube.com/watch?v=Va_NMDoDqLQ&t=680s
 But don't forget to set AIRFLOW_HOME using this command :
 
-'export AIRFLOW_HOME=~/airflow' (quote signs not included)
+```sh
+export AIRFLOW_HOME=~/airflow 
+```
 
-before you run 'airflow db init' (quote signs not included)
+before you run :
+
+```sh
+airflow db init
+```
 
 You can find the airflow directory on this path :
 
-\\wsl$\Ubuntu-22.04\home\{your wsl username}\airflow
 
-or by running this command on your WSL : 'explorer.exe .' (quote signs not included)
+```sh
+\\wsl$\Ubuntu-22.04\home\{your wsl username}\airflow
+```
+
+
+or by running this command on your WSL : 
+
+```sh
+'explorer.exe .' (quote signs not included)
+```
 
 You can put the DAG file in the 'dags' folder, if the 'dags' folder doesn't exist you can create it first.
 
