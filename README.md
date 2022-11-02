@@ -1,5 +1,7 @@
 # Web Scraping Automation using Airflow
+
 This repository is part of the following tutorial:
+
 https://medium.com/@fadlil.ismail/web-scraping-automation-using-apache-airflow-d8c02f3b1a12
 
 ## Requirements
@@ -9,7 +11,10 @@ To run this Airflow DAG, you need to install the following programs on Windows S
 3. Postgresql
 
 After installing all the programs above, you need to install Apache Airflow on your WSL and activate it.
-You can follow this tutorial to install and setting up the Airflow : https://www.youtube.com/watch?v=Va_NMDoDqLQ&t=680s
+You can follow this tutorial to install and setting up the Airflow : 
+
+https://www.youtube.com/watch?v=Va_NMDoDqLQ&t=680s
+
 But don't forget to set AIRFLOW_HOME using this command :
 
 ```sh
